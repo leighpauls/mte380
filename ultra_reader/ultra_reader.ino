@@ -72,31 +72,33 @@ Servo speed_controller;
 #define LEFT_MAX 80
 void setup() {
   Serial.begin(9600);
-  
   make_ultra(&front_ultra, FRONT_ULTRA_TRIGGER, FRONT_ULTRA_ECHO);
   make_ultra(&side_ultra, SIDE_ULTRA_TRIGGER, SIDE_ULTRA_ECHO);
-  
-  pinMode(PB_PIN, INPUT);
-  
   turn_servo.attach(3);
-  turn_servo.write(STRAIGHT_ANGLE);
   speed_controller.attach(2);
+  pinMode(PB_PIN, INPUT);
+}
+
+void loop() {
+ 
+  turn_servo.write(STRAIGHT_ANGLE);
   speed_controller.writeMicroseconds(1000);
+  
   delay(1000);
   
   Serial.println("Waiting to start...");
   while (digitalRead(PB_PIN) == HIGH) {}
   Serial.println("starting");
-}
-
-void loop() {
+  
   unsigned long cur_time = micros();
   unsigned long next_update_time = cur_time;
   
   unsigned long control_update_time = cur_time;
   speed_controller.writeMicroseconds(1150);
+  
+  delay(1000);
   // Serial.println(MAX_ROUND_TRIP_TIME);
-  while (1) {
+  while (digitalRead(PB_PIN) == HIGH) {
     cur_time = micros();
     update_ultra(&side_ultra, cur_time);
     update_ultra(&front_ultra, cur_time);
@@ -115,12 +117,12 @@ void loop() {
       // status change
       
       next_update_time += + 0.5 * 1000 * 1000;
-      /*Serial.print("A: ");
+      Serial.print("A: ");
       Serial.print(turn_angle);
-      Serial.print("F: ");
+      Serial.print(" F: ");
       Serial.print(front_ultra.cur_distance);
       Serial.print(", S: ");
-      Serial.println(side_ultra.cur_distance);*/
+      Serial.println(side_ultra.cur_distance);
     }
  
     delayMicroseconds(20);
