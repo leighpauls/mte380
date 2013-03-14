@@ -3,10 +3,12 @@
 #include "ultra_state.h"
 
 // The boat's pinout
-#define FRONT_ULTRA_TRIGGER 4
-#define FRONT_ULTRA_ECHO 5
-#define SIDE_ULTRA_TRIGGER 6
-#define SIDE_ULTRA_ECHO 7
+#define FRONT_ULTRA_TRIGGER 6
+#define FRONT_ULTRA_ECHO 7
+
+#define SIDE_ULTRA_TRIGGER 4
+#define SIDE_ULTRA_ECHO 5
+
 #define PB_PIN 12
 
 struct UltraState front_ultra;
