@@ -45,10 +45,8 @@ void loop() {
   Serial.println("starting");
   
   unsigned long cur_time = micros();
-  unsigned long next_update_time = cur_time;
   
-  unsigned long control_update_time = cur_time;
-  speed_controller.writeMicroseconds(1200);
+  // speed_controller.writeMicroseconds(1200);
   // speed_controller.writeMicroseconds(2000);
   
   delay(1000);
@@ -56,32 +54,26 @@ void loop() {
   while (digitalRead(PB_PIN) == HIGH) {
     cur_time = micros();
     update_ultra(&side_ultra, cur_time);
+    cur_time = micros();
     update_ultra(&front_ultra, cur_time);
+    
     int turn_angle = STRAIGHT_ANGLE - ANGLE_PER_DISTANCE*(0.3 - (double)side_ultra.cur_distance);
     
     if (front_ultra.cur_distance < 0.40) {
       turn_angle = LEFT_MAX;
     }
     
-    if (control_update_time < cur_time) {
-       control_update_time += 5 * 1000;
-       turn_servo.write(turn_angle);
-    }
+    turn_servo.write(turn_angle);
     
-    if (next_update_time < cur_time) {
-      // status change
-      
-      next_update_time += + 0.5 * 1000 * 1000;
-      Serial.print("A: ");
-      Serial.print(turn_angle);
-      Serial.print(" F: ");
-      Serial.print(front_ultra.cur_distance);
-      Serial.print(" F/t: ");
-      Serial.print(front_ultra.cur_rate_of_change);
-      Serial.print(", S: ");
-      Serial.println(side_ultra.cur_distance);
-    }
- 
+    Serial.print("A: ");
+    Serial.print(turn_angle);
+    Serial.print(" F: ");
+    Serial.print(front_ultra.cur_distance);
+    Serial.print(" F/t: ");
+    Serial.print(front_ultra.cur_rate_of_change);
+    Serial.print(", S: ");
+    Serial.println(side_ultra.cur_distance);
+  
     delayMicroseconds(20);
   }
 }

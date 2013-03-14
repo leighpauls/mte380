@@ -15,10 +15,7 @@ void make_ultra(struct UltraState *ultra, int trigger, int echo) {
   
   pinMode(trigger, OUTPUT);
   pinMode(echo, INPUT);
-  
-  ultra->expecting_echo = false;
-  ultra->pulse_emit_time_us = 0;
-  
+   
   ultra->cur_distance = 0;
   
   ultra->cur_rate_of_change = 0;
@@ -28,35 +25,15 @@ void make_ultra(struct UltraState *ultra, int trigger, int echo) {
 #define ALPHA 0.2
 
 void update_ultra(struct UltraState *ultra, unsigned long cur_time_us) {
-  if (ultra->expecting_echo) {
-    // There is still a pulse in transit
-    unsigned long round_trip_time = cur_time_us - ultra->pulse_emit_time_us;
-
-    if (digitalRead(ultra->echo_pin) == HIGH) {
-      // the pulse has arrived
-      double last_distance = ultra->cur_distance;
-      
-      ultra->cur_distance = last_distance * (1.0 - ALPHA) + ALPHA * (round_trip_time - SENSOR_BASE_TIME_US) * METERS_PER_US;
-      ultra->cur_rate_of_change = 1000000.0 * (ultra->cur_distance - last_distance) / (double)(cur_time_us - ultra->last_reading_time_us);
-      ultra->last_reading_time_us = cur_time_us;
-      
-      ultra->expecting_echo = false;
-    } else if (round_trip_time > MAX_ROUND_TRIP_TIME) {
-      // I can now assume the pulse is never arriving
-      ultra->cur_distance = MAX_DISTANCE;
-      ultra->cur_rate_of_change = 0;
-      ultra->last_reading_time_us = cur_time_us;
-      
-      ultra->expecting_echo = false;
-    }
-  } else if (digitalRead(ultra->echo_pin) == LOW) {
-    // there is no pulse left in transit
-    ultra->pulse_emit_time_us = cur_time_us;
-    digitalWrite(ultra->trigger_pin, HIGH);
-    ultra->expecting_echo = true;
-  }
-
-  if (cur_time_us - ultra->pulse_emit_time_us > PULSE_WIDTH_US) {
-    digitalWrite(ultra->trigger_pin, LOW);
-  }
+  digitalWrite(ultra->trigger_pin, HIGH);
+  delayMicroseconds(2);
+  digitalWrite(ultra->trigger_pin, LOW);
+  delayMicroseconds(5);
+  
+  unsigned long duration_us = pulseIn(ultra->echo_pin, HIGH);
+  
+  double new_distance = (double)duration_us / 2900.0 / 2.0;
+  ultra->cur_rate_of_change = 1000000.0 * (new_distance - ultra->cur_distance) / (double)(cur_time_us - ultra->last_reading_time_us);
+  ultra->cur_distance = new_distance;
+  ultra->last_reading_time_us = cur_time_us;
 }
