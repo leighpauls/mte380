@@ -67,7 +67,8 @@ Servo turn_servo;
 Servo speed_controller;
 
 #define STRAIGHT_ANGLE 95
-#define ANGLE_PER_DISTANCE (15.0/0.20)
+// #define ANGLE_PER_DISTANCE (15.0/0.20)
+#define ANGLE_PER_DISTANCE (0.0)
 #define PB_PIN 12
 #define LEFT_MAX 80
 void setup() {
@@ -77,6 +78,7 @@ void setup() {
   turn_servo.attach(3);
   speed_controller.attach(2);
   pinMode(PB_PIN, INPUT);
+  digitalWrite(PB_PIN, HIGH); // internal pull-up
 }
 
 void loop() {
@@ -84,7 +86,7 @@ void loop() {
   turn_servo.write(STRAIGHT_ANGLE);
   speed_controller.writeMicroseconds(1000);
   
-  delay(1000);
+  delay(3000);
   
   Serial.println("Waiting to start...");
   while (digitalRead(PB_PIN) == HIGH) {}
@@ -94,7 +96,8 @@ void loop() {
   unsigned long next_update_time = cur_time;
   
   unsigned long control_update_time = cur_time;
-  speed_controller.writeMicroseconds(1150);
+  speed_controller.writeMicroseconds(1200);
+  // speed_controller.writeMicroseconds(2000);
   
   delay(1000);
   // Serial.println(MAX_ROUND_TRIP_TIME);
@@ -104,7 +107,7 @@ void loop() {
     update_ultra(&front_ultra, cur_time);
     int turn_angle = STRAIGHT_ANGLE - ANGLE_PER_DISTANCE*(0.3 - (double)side_ultra.cur_distance);
     
-    if (front_ultra.cur_distance < 0.20) {
+    if (front_ultra.cur_distance < 0.40) {
       turn_angle = LEFT_MAX;
     }
     
