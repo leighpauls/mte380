@@ -76,6 +76,8 @@ void loop() {
       Serial.print(turn_angle);
       Serial.print(" F: ");
       Serial.print(front_ultra.cur_distance);
+      Serial.print(" F/t: ");
+      Serial.print(front_ultra.cur_rate_of_change);
       Serial.print(", S: ");
       Serial.println(side_ultra.cur_distance);
     }

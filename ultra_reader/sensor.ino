@@ -18,7 +18,11 @@ void make_ultra(struct UltraState *ultra, int trigger, int echo) {
   
   ultra->expecting_echo = false;
   ultra->pulse_emit_time_us = 0;
+  
   ultra->cur_distance = 0;
+  
+  ultra->cur_rate_of_change = 0;
+  ultra->last_reading_time_us = 0;
 }
 
 #define ALPHA 0.2
@@ -29,10 +33,20 @@ void update_ultra(struct UltraState *ultra, unsigned long cur_time_us) {
     unsigned long round_trip_time = cur_time_us - ultra->pulse_emit_time_us;
 
     if (digitalRead(ultra->echo_pin) == HIGH) {
-      ultra->cur_distance = ultra->cur_distance * (1.0 - ALPHA) + ALPHA * (round_trip_time - SENSOR_BASE_TIME_US) * METERS_PER_US;
+      // the pulse has arrived
+      double last_distance = ultra->cur_distance;
+      
+      ultra->cur_distance = last_distance * (1.0 - ALPHA) + ALPHA * (round_trip_time - SENSOR_BASE_TIME_US) * METERS_PER_US;
+      ultra->cur_rate_of_change = 1000000.0 * (ultra->cur_distance - last_distance) / (double)(cur_time_us - ultra->last_reading_time_us);
+      ultra->last_reading_time_us = cur_time_us;
+      
       ultra->expecting_echo = false;
     } else if (round_trip_time > MAX_ROUND_TRIP_TIME) {
+      // I can now assume the pulse is never arriving
       ultra->cur_distance = MAX_DISTANCE;
+      ultra->cur_rate_of_change = 0;
+      ultra->last_reading_time_us = cur_time_us;
+      
       ultra->expecting_echo = false;
     }
   } else if (digitalRead(ultra->echo_pin) == LOW) {
