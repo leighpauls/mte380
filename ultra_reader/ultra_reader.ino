@@ -48,7 +48,7 @@ void loop() {
   unsigned long cur_time = micros();
   
   // speed_controller.writeMicroseconds(1150);
-  speed_controller.writeMicroseconds(1160);
+  speed_controller.writeMicroseconds(1200);
   // speed_controller.writeMicroseconds(2000);
   
   delay(1000);
@@ -65,6 +65,9 @@ void loop() {
     int turn_angle = STRAIGHT_ANGLE; // - ANGLE_PER_DISTANCE*(0.3 - (double)side_ultra.cur_distance);
     
     double control_hardness = turn_control_cycle(&turn_control, front_ultra.cur_distance, back_ultra.cur_distance, cur_time);
+    if (abs(control_hardness) < 4.0) {
+      control_hardness = 0.0;
+    }
     turn_angle += max(-MAX_TURN_HARDNESS, min(MAX_TURN_HARDNESS, control_hardness));
     
     turn_servo.write(turn_angle);
