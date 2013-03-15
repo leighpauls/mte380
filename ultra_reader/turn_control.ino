@@ -1,10 +1,10 @@
 #include "turn_control_state.h"
 
 #define DESIRED_DIST 0.25 // meters - dist from the wall I want
-#define DEGREES_PER_METER  (15.0 / 0.1) // how hard to turn back to center
+#define DEGREES_PER_METER  (3.0 / 0.1) // how hard to turn back to center
 
-#define ANGLE_KP 2.0 // servo degress per boat direction degrees
-#define ANGLE_KD 3.0 // server degrees per boat direction degrees per second
+#define ANGLE_KP 1.5 // servo degress per boat direction degrees
+#define ANGLE_KD 0.1 // server degrees per boat direction degrees per second
 #define SENSOR_SPREAD 0.1 // meters - distance between sensors
 
 void turn_control_init(TurnControlState *state) {
@@ -33,7 +33,7 @@ double turn_control_cycle(TurnControlState *state, double front_dist, double bac
   
   // D control
   if (state->last_time_us != 0) {
-    double angle_error_roc = (angle_error_deg - state->last_angle_error_deg) / (double)(cur_time_us - state->last_time_us);
+    double angle_error_roc = (angle_error_deg - state->last_angle_error_deg) / (0.000001 * (double)(cur_time_us - state->last_time_us));
     output -= ANGLE_KD * angle_error_roc;
   }
   state->last_angle_error_deg = angle_error_deg;

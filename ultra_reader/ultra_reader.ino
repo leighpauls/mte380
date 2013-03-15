@@ -21,7 +21,7 @@ Servo turn_servo;
 Servo speed_controller;
 
 // Physical constants of the boat
-#define STRAIGHT_ANGLE 65
+#define STRAIGHT_ANGLE 58 // 65
 #define MAX_TURN_HARDNESS 23
 
 void setup() {
