@@ -21,7 +21,7 @@ Servo turn_servo;
 Servo speed_controller;
 
 // Physical constants of the boat
-#define STRAIGHT_ANGLE 58 // 65
+#define STRAIGHT_ANGLE 85
 #define MAX_TURN_HARDNESS 23
 
 void setup() {
@@ -69,7 +69,6 @@ void loop() {
       control_hardness = 0.0;
     }
     turn_angle += max(-MAX_TURN_HARDNESS, min(MAX_TURN_HARDNESS, control_hardness));
-    
     turn_servo.write(turn_angle);
     
     //Serial.print("A: ");
