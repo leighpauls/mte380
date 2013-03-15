@@ -48,7 +48,7 @@ void loop() {
   unsigned long cur_time = micros();
   
   // speed_controller.writeMicroseconds(1150);
-  // speed_controller.writeMicroseconds(1160);
+  speed_controller.writeMicroseconds(1160);
   // speed_controller.writeMicroseconds(2000);
   
   delay(1000);
@@ -71,6 +71,7 @@ void loop() {
     
     //Serial.print("A: ");
     //Serial.print(turn_angle);
+    
     /*
     Serial.print(" F: ");
     Serial.print(front_ultra.cur_distance);
