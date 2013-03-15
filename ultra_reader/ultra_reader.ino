@@ -68,7 +68,7 @@ void loop() {
     if (abs(control_hardness) < 4.0) {
       control_hardness = 0.0;
     }
-    turn_angle += max(-MAX_TURN_HARDNESS, min(MAX_TURN_HARDNESS, control_hardness));
+    turn_angle -= max(-MAX_TURN_HARDNESS, min(MAX_TURN_HARDNESS, control_hardness));
     turn_servo.write(turn_angle);
     
     //Serial.print("A: ");

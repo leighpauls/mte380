@@ -1,11 +1,11 @@
 #include "turn_control_state.h"
 
-#define DESIRED_DIST 0.25 // meters - dist from the wall I want
-#define DEGREES_PER_METER  (3.0 / 0.1) // how hard to turn back to center
+#define DESIRED_DIST 0.35 // meters - dist from the wall I want
+#define DEGREES_PER_METER  (0.12 / 0.1) // how hard to turn back to center
 
 #define ANGLE_KP 1.25 // servo degress per boat direction degrees
 #define ANGLE_KI 0.0
-#define ANGLE_KD 0.3 // server degrees per boat direction degrees per second
+#define ANGLE_KD 0.1 // 0.4 // server degrees per boat direction degrees per second
 #define SENSOR_SPREAD 0.1 // meters - distance between sensors
 
 void turn_control_init(TurnControlState *state) {
@@ -54,8 +54,8 @@ double turn_control_cycle(TurnControlState *state, double front_dist, double bac
   state->last_angle_error_deg = angle_error_deg;
   state->last_time_us = cur_time_us;
   
-  Serial.print(" int: ");
-  Serial.println(state->integral);
+  // Serial.print(" int: ");
+  // Serial.println(state->integral);
   
   return output;
 }
