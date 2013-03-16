@@ -3,9 +3,9 @@
 #define DESIRED_DIST 0.35 // meters - dist from the wall I want
 #define DEGREES_PER_METER  (0.12 / 0.1) // how hard to turn back to center
 
-#define ANGLE_KP 1.25 // servo degress per boat direction degrees
+#define ANGLE_KP 0.75 // servo degress per boat direction degrees
 #define ANGLE_KI 0.0
-#define ANGLE_KD 0.1 // 0.4 // server degrees per boat direction degrees per second
+#define ANGLE_KD 0.05 // 0.4 // server degrees per boat direction degrees per second
 #define SENSOR_SPREAD 0.1 // meters - distance between sensors
 
 void turn_control_init(TurnControlState *state) {
@@ -29,8 +29,8 @@ double turn_control_cycle(TurnControlState *state, double front_dist, double bac
   double x = back_dist;
   
   double pos_error = x - DESIRED_DIST;
-  double desired_angle_deg = -pos_error * DEGREES_PER_METER;
-  // double desired_angle_deg = 0.0;
+  // double desired_angle_deg = -pos_error * DEGREES_PER_METER;
+  double desired_angle_deg = 0.0;
   
   double output = 0.0;
   
