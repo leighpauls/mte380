@@ -48,7 +48,7 @@ void loop() {
   unsigned long cur_time = micros();
   
   // speed_controller.writeMicroseconds(1150);
-  speed_controller.writeMicroseconds(1250);
+  speed_controller.writeMicroseconds(1300);
   // speed_controller.writeMicroseconds(2000);
   
   delay(1000);
