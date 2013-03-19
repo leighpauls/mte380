@@ -12,6 +12,8 @@
 
 #define SWITCH_PIN 12
 
+#define IR_PIN A4
+
 // Sensor objects
 struct UltraState front_ultra;
 struct UltraState back_ultra;
@@ -32,6 +34,8 @@ void setup() {
   speed_controller.attach(2);
   pinMode(SWITCH_PIN, INPUT);
   digitalWrite(SWITCH_PIN, HIGH); // internal pull-up
+  pinMode(IR_PIN, INPUT);
+  digitalWrite(IR_PIN, LOW);
 }
 
 void loop() {
@@ -48,7 +52,7 @@ void loop() {
   unsigned long cur_time = micros();
   
   // speed_controller.writeMicroseconds(1150);
-  speed_controller.writeMicroseconds(1300);
+  // speed_controller.writeMicroseconds(1350);
   // speed_controller.writeMicroseconds(2000);
   
   delay(1000);
@@ -64,16 +68,21 @@ void loop() {
     
     int turn_angle = STRAIGHT_ANGLE; // - ANGLE_PER_DISTANCE*(0.3 - (double)side_ultra.cur_distance);
     
-    double control_hardness = turn_control_cycle(&turn_control, front_ultra.cur_distance, back_ultra.cur_distance, cur_time);
-    if (abs(control_hardness) < 4.0) {
-      control_hardness = 0.0;
+    double ir_voltage = readFrontRange(IR_PIN);
+    if (ir_voltage > 0.45) {
+      turn_angle = STRAIGHT_ANGLE - MAX_TURN_HARDNESS;
+    } else {
+      double control_hardness = turn_control_cycle(&turn_control, front_ultra.cur_distance, back_ultra.cur_distance, cur_time);
+      if (abs(control_hardness) < 4.0) {
+        control_hardness = 0.0;
+      }
+      turn_angle -= max(-MAX_TURN_HARDNESS, min(MAX_TURN_HARDNESS, control_hardness));
     }
-    turn_angle -= max(-MAX_TURN_HARDNESS, min(MAX_TURN_HARDNESS, control_hardness));
     turn_servo.write(turn_angle);
-    
-    //Serial.print("A: ");
-    //Serial.print(turn_angle);
-    
+ 
+    Serial.print("IR: ");
+    Serial.println(ir_voltage);
+ 
     /*
     Serial.print(" F: ");
     Serial.print(front_ultra.cur_distance);

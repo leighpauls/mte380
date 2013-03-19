@@ -37,3 +37,10 @@ void update_ultra(struct UltraState *ultra, unsigned long cur_time_us) {
   ultra->cur_distance = new_distance;
   ultra->last_reading_time_us = cur_time_us;
 }
+
+double readFrontRange(int pin_num) {
+  double voltage = (double)(analogRead(pin_num)) * 5.0 / 1023.0;
+  // values derived from datasheet
+  // double distance = 0.16734 / (voltage - 0.211);
+  return voltage;
+}

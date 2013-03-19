@@ -29,8 +29,8 @@ double turn_control_cycle(TurnControlState *state, double front_dist, double bac
   double x = back_dist;
   
   double pos_error = x - DESIRED_DIST;
-  // double desired_angle_deg = -pos_error * DEGREES_PER_METER;
-  double desired_angle_deg = 0.0;
+  double desired_angle_deg = -pos_error * DEGREES_PER_METER + 4.0;
+  // double desired_angle_deg = 4.0;
   
   double output = 0.0;
   
