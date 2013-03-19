@@ -7,6 +7,7 @@
 #define ANGLE_KI 0.0
 #define ANGLE_KD 0.05 // 0.4 // server degrees per boat direction degrees per second
 #define SENSOR_SPREAD 0.1 // meters - distance between sensors
+#define ANGLE_BIAS 4.0 // calculated sensor angle which results in a "straight" trajectory
 
 void turn_control_init(TurnControlState *state) {
   state->last_time_us = 0;
@@ -29,8 +30,8 @@ double turn_control_cycle(TurnControlState *state, double front_dist, double bac
   double x = back_dist;
   
   double pos_error = x - DESIRED_DIST;
-  double desired_angle_deg = -pos_error * DEGREES_PER_METER + 4.0;
-  // double desired_angle_deg = 4.0;
+  double desired_angle_deg = -pos_error * DEGREES_PER_METER + ANGLE_BIAS;
+  // double desired_angle_deg = ANGLE_BIAS;
   
   double output = 0.0;
   

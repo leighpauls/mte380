@@ -39,8 +39,7 @@ void update_ultra(struct UltraState *ultra, unsigned long cur_time_us) {
 }
 
 double readFrontRange(int pin_num) {
+  // convert from ADC range to 0V0-5V0 range
   double voltage = (double)(analogRead(pin_num)) * 5.0 / 1023.0;
-  // values derived from datasheet
-  // double distance = 0.16734 / (voltage - 0.211);
   return voltage;
 }
