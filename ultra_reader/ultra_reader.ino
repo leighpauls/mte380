@@ -41,21 +41,24 @@ void setup() {
   speed_controller.writeMicroseconds(1000);
   
   while (digitalRead(SWITCH_PIN) == HIGH) {}
+  delay(5);
   while (digitalRead(SWITCH_PIN) == LOW) {}
-  
+  delay(5);
   Serial.println("up for 2");
   speed_controller.writeMicroseconds(2000);
   
   
   while (digitalRead(SWITCH_PIN) == HIGH) {}
+  delay(5);
   while (digitalRead(SWITCH_PIN) == LOW) {}
+  delay(5);
   
   Serial.println("brake");
   speed_controller.writeMicroseconds(1000);
 }
 
 void loop() {
- Serial.println("Anti-ESC fucking delay...");  
+  Serial.println("Anti-ESC fucking delay...");  
   turn_servo.write(STRAIGHT_ANGLE);
   speed_controller.writeMicroseconds(1000);
   
@@ -68,7 +71,7 @@ void loop() {
   unsigned long cur_time = micros();
   
   // speed_controller.writeMicroseconds(1150);
-  speed_controller.writeMicroseconds(1300);
+  speed_controller.writeMicroseconds(1700);
   // speed_controller.writeMicroseconds(2000);
   
   delay(1000);
@@ -85,9 +88,10 @@ void loop() {
     int turn_angle = STRAIGHT_ANGLE; // - ANGLE_PER_DISTANCE*(0.3 - (double)side_ultra.cur_distance);
     
     double ir_voltage = readFrontRange(IR_PIN);
-    if (ir_voltage > 0.45) {
+    if (ir_voltage > 0.38) {
       turn_angle = STRAIGHT_ANGLE - MAX_TURN_HARDNESS;
     } else {
+      // find the angle that the controller wants to set the servo to
       double control_hardness = turn_control_cycle(&turn_control, front_ultra.cur_distance, back_ultra.cur_distance, cur_time);
       if (abs(control_hardness) < 4.0) {
         control_hardness = 0.0;
