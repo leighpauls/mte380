@@ -1,24 +1,35 @@
 #include "turn_control_state.h"
 
-#define DESIRED_DIST 0.35 // meters - dist from the wall I want
-#define DEGREES_PER_METER  (0.12 / 0.1) // how hard to turn back to center
+#define DESIRED_DIST 0.30 // meters - dist from the wall I want
+#define DEGREES_PER_METER  (0.1 / 0.1) // how hard to turn back to center
 
-#define ANGLE_KP 0.75 // servo degress per boat direction degrees
+#define ANGLE_KP 1.0 // servo degress per boat direction degrees
 #define ANGLE_KI 0.0
-#define ANGLE_KD 0.05 // 0.4 // server degrees per boat direction degrees per second
+#define ANGLE_KD 0.0 // 0.2 // 0.4 // server degrees per boat direction degrees per second
 #define SENSOR_SPREAD 0.1 // meters - distance between sensors
-#define ANGLE_BIAS 4.0 // calculated sensor angle which results in a "straight" trajectory
+#define ANGLE_BIAS 0.0 // calculated sensor angle which results in a "straight" trajectory
+
+#define LOST_WALL_THRESHOLD 0.8
+#define LOST_WALL_OUTPUT -10.0
+
+#define DIFF_ALPHA 0.5
 
 void turn_control_init(TurnControlState *state) {
   state->last_time_us = 0;
   state->last_angle_error_deg = 0.0;
   state->integral = 0.0;
+  state->dist_diff_low_pass = 0.0;
 }
 
 double turn_control_cycle(TurnControlState *state, double front_dist, double back_dist, double cur_time_us) {
-  double dist_diff = front_dist - back_dist;
-  if (abs(dist_diff) >= SENSOR_SPREAD) {
-    dist_diff = SENSOR_SPREAD * dist_diff / abs(dist_diff);
+  double dist_diff_contrib = front_dist - back_dist;
+  
+  state->dist_diff_low_pass = DIFF_ALPHA * dist_diff_contrib + state->dist_diff_low_pass * (1.0 - DIFF_ALPHA);
+  
+  double dist_diff = state->dist_diff_low_pass;
+  
+  if (abs(dist_diff) >= (SENSOR_SPREAD * 0.5)) {
+    dist_diff = 0.5 * SENSOR_SPREAD * dist_diff / abs(dist_diff);
   }
   double angle_deg = asin(dist_diff/SENSOR_SPREAD) * 180.0 / PI;
   
@@ -54,6 +65,19 @@ double turn_control_cycle(TurnControlState *state, double front_dist, double bac
   
   state->last_angle_error_deg = angle_error_deg;
   state->last_time_us = cur_time_us;
+  
+  // override if I've lost the wall completely
+  if (front_dist > LOST_WALL_THRESHOLD || back_dist > LOST_WALL_THRESHOLD) {
+    Serial.println("Find Wall");
+    return LOST_WALL_OUTPUT;
+  }
+  
+  Serial.print("diff: ");
+  Serial.print(dist_diff);
+  Serial.print("x: ");
+  Serial.print(x);
+  Serial.print(", a: ");
+  Serial.println(angle_deg);
   
   // Serial.print(" int: ");
   // Serial.println(state->integral);

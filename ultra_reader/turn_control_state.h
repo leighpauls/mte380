@@ -7,4 +7,6 @@ struct TurnControlState {
   double last_angle_error_deg;
   
   double integral;
+  
+  double dist_diff_low_pass;
 };

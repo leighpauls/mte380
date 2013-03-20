@@ -23,8 +23,8 @@ Servo turn_servo;
 Servo speed_controller;
 
 // Physical constants of the boat
-#define STRAIGHT_ANGLE 85
-#define MAX_TURN_HARDNESS 23
+#define STRAIGHT_ANGLE 90.5
+#define MAX_TURN_HARDNESS 20
 
 void setup() {
   Serial.begin(9600);
@@ -36,6 +36,22 @@ void setup() {
   digitalWrite(SWITCH_PIN, HIGH); // internal pull-up
   pinMode(IR_PIN, INPUT);
   digitalWrite(IR_PIN, LOW);
+  
+  Serial.println("brake for 2");
+  speed_controller.writeMicroseconds(1000);
+  
+  while (digitalRead(SWITCH_PIN) == HIGH) {}
+  while (digitalRead(SWITCH_PIN) == LOW) {}
+  
+  Serial.println("up for 2");
+  speed_controller.writeMicroseconds(2000);
+  
+  
+  while (digitalRead(SWITCH_PIN) == HIGH) {}
+  while (digitalRead(SWITCH_PIN) == LOW) {}
+  
+  Serial.println("brake");
+  speed_controller.writeMicroseconds(1000);
 }
 
 void loop() {
@@ -52,7 +68,7 @@ void loop() {
   unsigned long cur_time = micros();
   
   // speed_controller.writeMicroseconds(1150);
-  // speed_controller.writeMicroseconds(1350);
+  speed_controller.writeMicroseconds(1300);
   // speed_controller.writeMicroseconds(2000);
   
   delay(1000);
@@ -80,17 +96,14 @@ void loop() {
     }
     turn_servo.write(turn_angle);
  
-    Serial.print("IR: ");
-    Serial.println(ir_voltage);
+    // Serial.print("IR: ");
+    // Serial.println(ir_voltage);
  
-    /*
+    
     Serial.print(" F: ");
     Serial.print(front_ultra.cur_distance);
     Serial.print(", B: ");
     Serial.println(back_ultra.cur_distance);
-    */
-    // Serial.print(" S/t: ");
-    // Serial.println(side_ultra.cur_rate_of_change);
     
     delayMicroseconds(20);
   }
