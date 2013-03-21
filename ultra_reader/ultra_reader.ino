@@ -32,6 +32,7 @@ Servo speed_controller;
 // Physical constants of the boat
 #define STRAIGHT_ANGLE 90.5
 #define MAX_TURN_HARDNESS 20
+#define LEFT_TURN_HARDNESS 24
 
 void setup() {
   Serial.begin(9600);

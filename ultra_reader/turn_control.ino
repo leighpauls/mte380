@@ -35,6 +35,7 @@ double turn_control_cycle(TurnControlState *state, double front_dist, double bac
   
   if (angle_deg != angle_deg) {
     // nan
+    Serial.println("naning");
     angle_deg = 0.0;
   }
   
@@ -68,13 +69,21 @@ double turn_control_cycle(TurnControlState *state, double front_dist, double bac
   
   // override if I've lost the wall completely
   if (front_dist > LOST_WALL_THRESHOLD || back_dist > LOST_WALL_THRESHOLD) {
-    Serial.println("Find Wall");
+    Serial.print("f: ");
+    Serial.print(front_dist);
+    Serial.print(", b:" );
+    Serial.print(back_dist);
+    Serial.println(", Find Wall");
     return LOST_WALL_OUTPUT;
   }
   
-  Serial.print("diff: ");
+  Serial.print("f: ");
+  Serial.print(front_dist);
+  Serial.print(", b:" );
+  Serial.print(back_dist);
+  Serial.print(", diff: ");
   Serial.print(dist_diff);
-  Serial.print("x: ");
+  Serial.print(", x: ");
   Serial.print(x);
   Serial.print(", a: ");
   Serial.println(angle_deg);
