@@ -17,8 +17,8 @@
 
 #define IR_PIN A4
 
-#define STRAIGHTS 1600
-#define TURNS    1500
+#define STRAIGHTS 1350//1500
+#define TURNS   1000// 1400
 
 // Sensor objects
 struct UltraState front_ultra;
@@ -30,7 +30,7 @@ Servo turn_servo;
 Servo speed_controller;
 
 // Physical constants of the boat
-#define STRAIGHT_ANGLE 90.5
+#define STRAIGHT_ANGLE 83.5 //90.5
 #define MAX_TURN_HARDNESS 20
 #define LEFT_TURN_HARDNESS 24
 
@@ -100,17 +100,17 @@ void loop() {
     //double ir_voltage = readFrontRange(IR_PIN);
     
     //if (ir_voltage > 0.38) {
-    if (head_ultra.cur_distance < 0.90){
+  /*  if (head_ultra.cur_distance < 0.90 && head_ultra.cur_distance > 0.05 ){
       turn_angle = STRAIGHT_ANGLE - MAX_TURN_HARDNESS;
       speed_controller.writeMicroseconds(TURNS);
-    } else {
+    } else {*/
       // find the angle that the controller wants to set the servo to
       double control_hardness = turn_control_cycle(&turn_control, front_ultra.cur_distance, back_ultra.cur_distance, cur_time);
       if (abs(control_hardness) < 4.0) {
         control_hardness = 0.0;
       }
       turn_angle -= max(-MAX_TURN_HARDNESS, min(MAX_TURN_HARDNESS, control_hardness));
-    }
+  //  }
     turn_servo.write(turn_angle);
    
     Serial.print(" F: ");
@@ -120,5 +120,6 @@ void loop() {
     Serial.print(", H: ");
     Serial.println(head_ultra.cur_distance);
     delayMicroseconds(20);
+    //delay(0.5);
   }
 }
