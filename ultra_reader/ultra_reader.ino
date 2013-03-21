@@ -25,6 +25,7 @@ Servo speed_controller;
 // Physical constants of the boat
 #define STRAIGHT_ANGLE 90.5
 #define MAX_TURN_HARDNESS 20
+#define LEFT_TURN_HARDNESS 24
 
 void setup() {
   Serial.begin(9600);
@@ -71,7 +72,7 @@ void loop() {
   unsigned long cur_time = micros();
   
   // speed_controller.writeMicroseconds(1150);
-  speed_controller.writeMicroseconds(1700);
+  speed_controller.writeMicroseconds(1600);
   // speed_controller.writeMicroseconds(2000);
   
   delay(1000);
@@ -89,7 +90,8 @@ void loop() {
     
     double ir_voltage = readFrontRange(IR_PIN);
     if (ir_voltage > 0.38) {
-      turn_angle = STRAIGHT_ANGLE - MAX_TURN_HARDNESS;
+      // Serial.println("Left");
+      turn_angle = STRAIGHT_ANGLE - LEFT_TURN_HARDNESS;
     } else {
       // find the angle that the controller wants to set the servo to
       double control_hardness = turn_control_cycle(&turn_control, front_ultra.cur_distance, back_ultra.cur_distance, cur_time);
@@ -104,11 +106,11 @@ void loop() {
     // Serial.println(ir_voltage);
  
     
-    Serial.print(" F: ");
+    /*Serial.print(" F: ");
     Serial.print(front_ultra.cur_distance);
     Serial.print(", B: ");
     Serial.println(back_ultra.cur_distance);
-    
+    */
     delayMicroseconds(20);
   }
 }
