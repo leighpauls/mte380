@@ -1,7 +1,7 @@
 #include "turn_control_state.h"
 
 #define DESIRED_DIST 0.35 // meters - dist from the wall I want
-#define DEGREES_PER_METER  (0.5 / 0.1) // boat degrees per position meter - how hard to turn back to center
+#define DEGREES_PER_METER  10//(0.5 / 0.1) // boat degrees per position meter - how hard to turn back to center
 
 #define ANGLE_KP 1.0 // servo degress per boat direction degrees
 #define ANGLE_KI 0.0
@@ -10,7 +10,7 @@
 #define ANGLE_BIAS 0.0 // calculated sensor angle which results in a "straight" trajectory
 
 #define LOST_WALL_THRESHOLD 0.8 // meters from the wall where utlra readings are crap
-#define LOST_WALL_OUTPUT -10.0 // how hard to turn if the wall is lost
+#define LOST_WALL_OUTPUT 0//-10.0 // how hard to turn if the wall is lost
 
 #define DIFF_ALPHA 0.5 // intensity of Low pass on boat angle (sensor difference)
 
@@ -19,6 +19,11 @@ void turn_control_init(TurnControlState *state) {
   state->last_angle_error_deg = 0.0;
   state->integral = 0.0;
   state->dist_diff_low_pass = 0.0;
+}
+
+void turn_control_clear(TurnControlState *state, double front_dist, double back_dist) {  //Clear the value of the accumulated lo pass distance difference and replace it with the new one.
+  double dist_diff = front_dist - back_dist;
+  state->dist_diff_low_pass = dist_diff;
 }
 
 double turn_control_cycle(TurnControlState *state, double front_dist, double back_dist, double cur_time_us) {
