@@ -69,14 +69,14 @@ void update_head(struct UltraState *ultra, unsigned long cur_time_us) {
   unsigned long DistanceMeasured=pulseIn(ultra->echo_pin,LOW);
   double new_distance = 0; 
   if(DistanceMeasured==50000){              // the reading is invalid.
-    Serial.print("Invalid");    
+    //Serial.print("Invalid");    
   }
    else{
     new_distance=(double)DistanceMeasured / 2900.0 / 2.0;           // every 50us low level stands for 1cm
    }
-  Serial.print("Distance=");
-  Serial.print(new_distance);
-  Serial.println("m");
+  //Serial.print("Distance=");
+  //Serial.print(new_distance);
+  //Serial.println("m");
  
   ultra->cur_rate_of_change = 1000000.0 * (new_distance - ultra->cur_distance) / (double)(cur_time_us - ultra->last_reading_time_us);
   ultra->cur_distance = new_distance;

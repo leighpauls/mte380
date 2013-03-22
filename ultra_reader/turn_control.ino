@@ -1,16 +1,16 @@
 #include "turn_control_state.h"
 
-#define DESIRED_DIST 0.35 // meters - dist from the wall I want
+#define DESIRED_DIST 0.30 // meters - dist from the wall I want
 #define DEGREES_PER_METER  10//(0.5 / 0.1) // boat degrees per position meter - how hard to turn back to center
 
-#define ANGLE_KP 1.0 // servo degress per boat direction degrees
+#define ANGLE_KP 0.7//0.85 for below hydroplane //1.0 // servo degress per boat direction degrees
 #define ANGLE_KI 0.0
 #define ANGLE_KD 0.0 // 0.2 // 0.4 // server degrees per boat direction degrees per second
 #define SENSOR_SPREAD 0.1 // meters - distance between sensors
 #define ANGLE_BIAS 0.0 // calculated sensor angle which results in a "straight" trajectory
 
-#define LOST_WALL_THRESHOLD 0.8 // meters from the wall where utlra readings are crap
-#define LOST_WALL_OUTPUT 0//-10.0 // how hard to turn if the wall is lost
+#define LOST_WALL_THRESHOLD 1.0//0.8 // meters from the wall where utlra readings are crap
+#define LOST_WALL_OUTPUT -4//-10.0 // how hard to turn if the wall is lost
 
 #define DIFF_ALPHA 0.5 // intensity of Low pass on boat angle (sensor difference)
 

@@ -3,6 +3,7 @@
 #include "ultra_state.h"
 #include "turn_control_state.h"
 
+#define DEBUG 1
 // The boat's pinout
 #define FRONT_ULTRA_TRIGGER 4
 #define FRONT_ULTRA_ECHO 5
@@ -17,9 +18,11 @@
 
 #define IR_PIN A4
 
-#define STRAIGHTS 1625//1500
-#define TURNS 1625// 1400
+#define STRAIGHTS 1750 //1700FAST LAP//1500
+#define TURNS 1750//1700FAST LAP// 1400
 
+#define TURN_DIST 0.9 //1.1 hydroplane
+#define TURN_EXIT 1.3//1.4 //
 // Sensor objects
 struct UltraState front_ultra;
 struct UltraState back_ultra;
@@ -31,8 +34,8 @@ Servo speed_controller;
 
 // Physical constants of the boat
 #define STRAIGHT_ANGLE 88.5 //90.5
-#define MAX_TURN_HARDNESS 20
-#define LEFT_TURN_HARDNESS 24
+#define MAX_TURN_HARDNESS 15//20
+#define LEFT_TURN_HARDNESS 21//24 (24 with 0.9 TURN DISTANCE with 1700 is supposed to work decently)
 
 void setup() {
   Serial.begin(9600);
@@ -47,12 +50,14 @@ void setup() {
   digitalWrite(IR_PIN, LOW);
   
   Serial.println("brake for 2");
+  Serial.println(SWITCH_PIN);
   speed_controller.writeMicroseconds(1000);
+  delay(500);
   
   while (digitalRead(SWITCH_PIN) == HIGH) {}
-  delay(5);
+  delay(10);
   while (digitalRead(SWITCH_PIN) == LOW) {}
-  delay(5);
+  delay(10);
   Serial.println("up for 2");
   speed_controller.writeMicroseconds(2000);
   
@@ -106,10 +111,9 @@ void loop() {
     //double ir_voltage = readFrontRange(IR_PIN);
     
     //if (ir_voltage > 0.38) {
-    double dist_diff = (front_ultra.cur_distance - back_ultra.cur_distance);
-    if ((head_ultra.cur_distance < 1.0 && head_ultra.cur_distance > 0.01) || (turn == true && head_ultra.cur_distance < 1.4) || (turn == true && (abs(dist_diff) > 0.05))){
-      turn_angle = STRAIGHT_ANGLE - MAX_TURN_HARDNESS;
-      speed_controller.writeMicroseconds(TURNS);
+    double dist_diff = abs(front_ultra.cur_distance - back_ultra.cur_distance);
+    if ((head_ultra.cur_distance < TURN_DIST && head_ultra.cur_distance > 0.01) || (turn == true && ((head_ultra.cur_distance < (TURN_EXIT)) || (dist_diff) > 0.03))){
+      turn_angle = STRAIGHT_ANGLE - LEFT_TURN_HARDNESS;
       turn = true;
     } 
     else {
@@ -124,15 +128,25 @@ void loop() {
       }
       turn_angle -= max(-MAX_TURN_HARDNESS, min(MAX_TURN_HARDNESS, control_hardness));
     }
+    if (turn == true || head_ultra.cur_distance < (TURN_DIST+0.1)) {
+      speed_controller.writeMicroseconds(TURNS); 
+    }   
+    //turn_angle = STRAIGHT_ANGLE - LEFT_TURN_HARDNESS;
     turn_servo.write(turn_angle);
-   
-    Serial.print(" F: ");
-    Serial.print(front_ultra.cur_distance);
-    Serial.print(", B: ");
-    Serial.println(back_ultra.cur_distance);
-    Serial.print(", H: ");
-    Serial.println(head_ultra.cur_distance);
+    if (turn==false) {
+      speed_controller.writeMicroseconds(STRAIGHTS);
+    }
+
+#if DEBUG
+      Serial.print(" F: ");
+      Serial.print(front_ultra.cur_distance);
+      Serial.print(", B: ");
+      Serial.print(back_ultra.cur_distance);
+      Serial.print(", H: ");
+      Serial.println(head_ultra.cur_distance);
+#endif
     delayMicroseconds(20);
+    
     //delay(0.5);
   }
 }
